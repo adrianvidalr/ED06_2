@@ -1,30 +1,32 @@
- name: Deploy MkDocs
+name: Deploy MkDocs
 
- on:
-   push:
-     branches: [ main ]
+on:
+  push:
+    branches:
+      - main
 
- jobs:
-   deploy:
-     runs-on: ubuntu-latest
-     steps:
--      - uses: actions/checkout@v2
-+      - uses: actions/checkout@v2
-+        with:
-+          # Evita que checkout use el token por defecto
-+          persist-credentials: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
-+      # Configuramos el remoto para usar el GITHUB_TOKEN al hacer push
-+      - name: Configurar remoto con token
-+        run: |
-+          git remote set-url origin \
-+            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      - name: Configurar remoto con token
+        run: |
+          git remote set-url origin \
+            https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
-       - uses: actions/setup-python@v2
-         with:
-           python-version: '3.x'
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-       - run: pip install mkdocs-material
+      - name: Instalar MkDocs Material
+        run: pip install mkdocs-material
 
-       - run: mkdocs gh-deploy --force
+      - name: Desplegar con MkDocs
+        run: mkdocs gh-deploy --force
 
